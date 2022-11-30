@@ -122,3 +122,18 @@ birthweight %>%
   ggplot(aes(x = pred, y = resid)) + geom_point()
 
 ```
+
+```{r}
+cv_df =
+  crossv_mc(birthweight, 100) %>% ##always use 100??????
+  mutate(
+    train = map(train, as_tibble),
+    test = map(test, as_tibble))
+# cv_df %>% pull(train) %>% .[[1]] %>% as_tibble
+# cv_df %>% pull(test) %>% .[[1]] %>% as_tibble
+cv_df =
+  cv_df %>% 
+  mutate(
+    train = map(train, as_tibble),
+    test = map(test, as_tibble))
+```
