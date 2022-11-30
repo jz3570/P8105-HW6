@@ -41,6 +41,7 @@ fit_logistic %>%
   knitr::kable(digits = 3)
 exp(summary(fit_logistic)$coefficients["victim_sexMale",1] + qnorm(c(0.025,0.5,0.975)) * summary(fit_logistic)$coefficients["victim_sexMale",2])
 ```
+
 Keeping all other variables fixed, the estimate of the adjusted odds ratio for solving homicides comparing male victims to female victims is 0.4687305, with confidence interval of (0.3193133, 0.6880650).
 
 ```{r}
