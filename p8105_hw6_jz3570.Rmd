@@ -55,3 +55,36 @@ city_glm =
   select(term, log_OR = estimate, OR, p.value, adj.conf.low, adj.conf.high) 
 
 ```
+
+
+# Problem 3
+
+```{r}
+birthweight <- read.csv("./data/birthweight.csv")%>% 
+  na.omit() %>% 
+  mutate(babysex = as.factor(babysex)) %>% 
+  mutate(frace = as.factor(frace))%>% 
+  mutate(mrace = as.factor(mrace))%>% 
+  mutate(malform = as.factor(malform))
+  
+birthweight %>% 
+  ggplot(aes(x = blength, y = bwt)) + 
+  geom_point(alpha = .5)
+
+fit1 = lm(bwt ~ bhead, data = birthweight)
+summary(fit1)
+summary(fit1)$coef
+coef(fit1)
+#fitted.values(fit1)
+fit1 %>% 
+  broom::glance()%>% 
+  broom::tidy()
+
+birthweight %>% 
+  modelr::add_residuals(fit1) %>% 
+  modelr::add_predictions(fit1) %>%
+  ggplot(aes(x = pred, y = resid)) + geom_point()
+
+#plot(fit1)
+```
+  
