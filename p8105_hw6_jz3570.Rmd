@@ -69,10 +69,20 @@ birthweight <- read.csv("./data/birthweight.csv")%>%
   mutate(malform = as.factor(malform))
   
 birthweight %>% 
-  ggplot(aes(x = blength, y = bwt)) + 
-  geom_point(alpha = .5)
+  ggplot(aes(x = bhead, y = bwt)) + 
+  geom_point(alpha = .5)+
+  ylab("Baby weight at birth") +
+  xlab("Baby head circumference at birth") +
+  labs(title = "plot of baby weight vs baby head circumference at birth")
 
-fit1 = lm(bwt ~ bhead, data = birthweight)
+birthweight %>% 
+  ggplot(aes(x = blength, y = bwt)) + 
+  geom_point(alpha = .5)+
+  ylab("Baby weight at birth") +
+  xlab("Baby length at birth") +
+  labs(title = "plot of baby weight vs baby length at birth")
+
+fit1 = lm(bwt ~ bhead+blength, data = birthweight)
 summary(fit1)
 summary(fit1)$coef
 coef(fit1)
@@ -84,11 +94,19 @@ fit1 %>%
 birthweight %>% 
   modelr::add_residuals(fit1) %>% 
   modelr::add_predictions(fit1) %>%
-  ggplot(aes(x = pred, y = resid)) + geom_point()
+  ggplot(aes(x = pred, y = resid)) + geom_point()+
+  ylab("Residual") +
+  xlab("Fitted value") +
+  labs(title = "plot of residual vs fit for model 1")
 
 #plot(fit1)
 ```
-  
+
+
+Firstly, from common sense I choose baby’s head circumference at birth and baby’s length at birth to be the predictors in my model. The information form internet consist with my hypothesis, where I found that the baby weight at birth could be related to baby's head circumference since most weight of a baby is at their head part. Also, I found that longer baby could weight more, just like adults where a taller person could probably weight more compared to a shorter person. After selecting those two potential predictors, I created two scatter plot to investigate the relationship between those two variables and baby weight as birth. From the first scatter plot, we see that there's possible a linear relationship between baby weight and baby head circumference at birth. From the second plot, we also see that there's possible a linear relationship between baby weight and baby length at birth. From those plot, and common sense, I decide to build my model with baby’s head circumference at birth and baby’s length at birth as the predictors to predict baby's weight at birth.
+
+
+From the residual vs fit plot, we see that the points are randomly spread around zero. Although there's some pattern in the left part, most part of the plot shows no specific pattern. 
 
 ```{r}
 fit2 = lm(bwt ~ blength + gaweeks, data = birthweight)
@@ -103,9 +121,14 @@ fit2 %>%
 birthweight %>% 
   modelr::add_residuals(fit2) %>% 
   modelr::add_predictions(fit2) %>%
-  ggplot(aes(x = pred, y = resid)) + geom_point()
+  ggplot(aes(x = pred, y = resid)) + geom_point()+
+  ylab("Residual") +
+  xlab("Fitted value") +
+  labs(title = "plot of residual vs fit for model 2")
 
 ```
+
+From the residual vs fit plot, we see that the points are randomly spread around zero. Although there's one outlier in the left part, most part of the plot shows no specific pattern. 
 
 ```{r}
 fit3 = glm(bwt ~ bhead + blength + babysex + bhead*blength*babysex, data = birthweight)
@@ -120,9 +143,14 @@ fit3 %>%
 birthweight %>% 
   modelr::add_residuals(fit3) %>% 
   modelr::add_predictions(fit3) %>%
-  ggplot(aes(x = pred, y = resid)) + geom_point()
+  ggplot(aes(x = pred, y = resid)) + geom_point()+
+  ylab("Residual") +
+  xlab("Fitted value") +
+  labs(title = "plot of residual vs fit for model 3")
 
 ```
+
+From the residual vs fit plot, we see that the points are randomly spread around zero. Although there're some outliers in the left part, they are not very far from the majority of the points and most part of the plot shows no specific pattern. 
 
 ```{r}
 cv_df =
@@ -143,7 +171,7 @@ cv_df =
 cv_df = 
   cv_df %>% 
   mutate(
-    fit1  = map(train, ~lm(bwt ~ blength, data = .x)),
+    fit1  = map(train, ~lm(bwt ~ blength + bhead, data = .x)),
     fit2  = map(train, ~lm(bwt ~ blength + gaweeks, data = .x)),
     fit3  = map(train, ~glm(bwt ~ bhead + blength + babysex + bhead*blength*babysex, data = .x))) %>% 
   mutate(
@@ -168,5 +196,5 @@ cv_df %>%
 ```
 
 
-We can see that the last model, general linear model, is better than the simple linear models. The first model with only one predictor is the worst, and as we add more predictors and more appropriate predictors, the model gets improved.
+We can see that the last model, general linear model, and the first model are better than the second model, since they have smaller rmse, compared to the second model. The second model is the worst, and that shows the importance of choosing the right predictors to put into the mode. Although the second model and the first model both have two predictors and the third model has more predictors, the first and the third model have similar performance and the second model is the worst one
 
