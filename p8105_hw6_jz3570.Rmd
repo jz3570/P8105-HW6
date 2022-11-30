@@ -88,3 +88,37 @@ birthweight %>%
 #plot(fit1)
 ```
   
+
+```{r}
+fit2 = lm(bwt ~ blength + gaweeks, data = birthweight)
+summary(fit2)
+summary(fit2)$coef
+coef(fit2)
+#fitted.values(fit2)
+fit2 %>% 
+  broom::glance()%>% 
+  broom::tidy()
+
+birthweight %>% 
+  modelr::add_residuals(fit2) %>% 
+  modelr::add_predictions(fit2) %>%
+  ggplot(aes(x = pred, y = resid)) + geom_point()
+
+```
+
+```{r}
+fit3 = glm(bwt ~ bhead + blength + babysex + bhead*blength*babysex, data = birthweight)
+summary(fit3)
+summary(fit3)$coef
+coef(fit3)
+#fitted.values(fit3)
+fit3 %>% 
+  broom::glance()%>% 
+  broom::tidy()
+
+birthweight %>% 
+  modelr::add_residuals(fit3) %>% 
+  modelr::add_predictions(fit3) %>%
+  ggplot(aes(x = pred, y = resid)) + geom_point()
+
+```
