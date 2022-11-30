@@ -45,17 +45,34 @@ exp(summary(fit_logistic)$coefficients["victim_sexMale",1] + qnorm(c(0.025,0.5,0
 Keeping all other variables fixed, the estimate of the adjusted odds ratio for solving homicides comparing male victims to female victims is 0.4687305, with confidence interval of (0.3193133, 0.6880650).
 
 ```{r}
-city_glm = 
+city_fit_glm = 
   homicide %>%
   nest(data = -city_state) %>% 
   mutate(model = map(data, ~glm(solved~victim_age + victim_race + victim_sex, data = ., family = binomial())),
          result = map(.x=model, ~broom::tidy(.x,conf.int = TRUE))) %>% 
-  select( city_state,result)%>% 
+  select(city_state,result)%>% 
   unnest(result)%>% 
   mutate(OR = exp(estimate), adj.conf.low=exp(conf.low), adj.conf.high=exp(conf.high)) %>%
-  select(term, log_OR = estimate, OR, p.value, adj.conf.low, adj.conf.high) 
+  select(city_state,term, log_OR = estimate, OR, p.value, adj.conf.low, adj.conf.high) %>% 
+  filter(term == "victim_sexMale")
 
 ```
+
+````{r}
+city_fit_glm%>%
+  mutate(
+    city_state = fct_reorder(city_state, -OR)
+  ) %>%
+  ggplot(aes(x = OR, y = city_state)) +
+  geom_point() +
+  geom_errorbar(aes(xmin = adj.conf.low, xmax = adj.conf.high)) +
+  ylab("City, state") +
+  xlab("Odds ratio") +
+  labs(title = "Adjusted odds ratio of solved cases for male and female victims")
+
+```
+
+Based on the plot, we can see that Long Beach CA has the lowest estimated OR for male and female victims, which means the case solve rate is not too different between males and females, and Stockton, CA has the highest OR for male and female victims, which means the case solve rate is very different between males and females. Also, we see that for most of the cities, the distribution of estimated OR is right skewed.
 
 
 # Problem 3
