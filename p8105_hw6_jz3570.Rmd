@@ -1,0 +1,43 @@
+---
+title: "P8105"
+author: "Jiawen Zhao"
+date: "11/25/2022"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggridges)
+library(patchwork)
+library(gridExtra)
+library(modelr)
+```
+
+#### Problem 2
+
+```{r}
+homicide <- read.csv("./data/homicide-data.csv")%>% 
+  na.omit() %>% 
+  unite(city_state, c(city,state),sep = ", ") %>% 
+  mutate(solved = case_when(grepl("Closed by arrest", disposition)==TRUE ~ 1,
+  grepl("Closed by arrest", disposition)==FALSE ~ 0)) %>% 
+  mutate(unsolved = case_when(grepl("Closed by arrest", disposition)==FALSE ~ 1,
+  grepl("Closed by arrest", disposition)==TRUE ~ 0)) %>% 
+  filter(!str_detect(city_state, "Dallas, TX"))%>% 
+  filter(!str_detect(city_state, "Phoenix, AZ"))%>% 
+  filter(!str_detect(city_state, "Kansas City, MO"))%>% 
+  filter(!str_detect(city_state, "Tulsa, AL"))%>% 
+  filter(str_detect(victim_race, c("White", "Black"))) %>% 
+  mutate(victim_age =as.numeric(victim_age))%>% 
+  na.omit()
+BMD = filter(homicide,city_state=="Baltimore, MD")
+fit_logistic = BMD%>% 
+  glm(solved ~ victim_age + victim_race + victim_sex, data = ., family = binomial())
+fit_logistic %>% 
+  broom::tidy(conf.int = TRUE) %>% 
+  mutate(OR = exp(estimate), adj.conf.low=exp(conf.low), adj.conf.high=exp(conf.high)) %>%
+  select(term, log_OR = estimate, OR, p.value, adj.conf.low, adj.conf.high, conf.low, conf.high) %>% 
+  knitr::kable(digits = 3)
+exp(summary(fit_logistic)$coefficients["victim_sexMale",1] + qnorm(c(0.025,0.5,0.975)) * summary(fit_logistic)$coefficients["victim_sexMale",2])
+```
