@@ -169,7 +169,7 @@ city_fit_glm%>%
 
 ```
 
-Based on the plot, we can see that Long Beach CA has the lowest estimated OR for male and female victims, which means the case solve rate is not too different between males and females, and Stockton, CA has the highest OR for male and female victims, which means the case solve rate is very different between males and females. Also, we see that for most of the cities, the distribution of estimated OR is right skewed.
+Based on the plot, we can see that Long Beach CA has the lowest estimated OR for male and female victims, which means the case solve rate is higher in famles compared to males , and Stockton, CA has the highest OR for male and female victims, which means the case solve rate is very different between males and females, specifically, the case solve rate for males is higher than that of females. 
 
 
 # Problem 3
@@ -306,7 +306,10 @@ cv_df %>%
     values_to = "rmse",
     names_prefix = "rmse_") %>% 
   mutate(model = fct_inorder(model)) %>% 
-  ggplot(aes(x = model, y = rmse)) + geom_violin()
+  ggplot(aes(x = model, y = rmse)) + geom_violin()+
+  ylab("rmse Value") +
+  xlab("Models") +
+  labs(title = "Violin Plot of rmse Values for Three Models")
 
 ```
 
