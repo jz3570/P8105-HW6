@@ -169,7 +169,7 @@ city_fit_glm%>%
 
 ```
 
-Based on the plot, we can see that Long Beach CA has the lowest estimated OR for male and female victims, which means the case solve rate is higher in famles compared to males , and Stockton, CA has the highest OR for male and female victims, which means the case solve rate is very different between males and females, specifically, the case solve rate for males is higher than that of females. 
+Based on the plot, we can see that Long Beach CA has the lowest estimated OR for male and female victims, which means the case solve rate is higher in females compared to males , and Stockton, CA has the highest OR for male and female victims, which means the case solve rate is very different between males and females, specifically, the case solve rate for males is higher than that of females. 
 
 
 # Problem 3
